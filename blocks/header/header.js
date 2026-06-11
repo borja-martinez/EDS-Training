@@ -139,6 +139,7 @@ export default async function decorate(block) {
 
   const navSections = nav.querySelector('.nav-sections');
   if (navSections) {
+    // level 1 dropdowns
     navSections.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((navSection) => {
       if (navSection.querySelector('ul')) navSection.classList.add('nav-drop');
       navSection.addEventListener('click', () => {
@@ -146,6 +147,23 @@ export default async function decorate(block) {
           const expanded = navSection.getAttribute('aria-expanded') === 'true';
           toggleAllNavSections(navSections);
           navSection.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        }
+      });
+    });
+
+    // level 2 items that contain a nested ul → flyout (level 3) on hover
+    navSections.querySelectorAll(':scope .default-content-wrapper > ul > li > ul > li').forEach((navSubItem) => {
+      if (!navSubItem.querySelector('ul')) return;
+      navSubItem.classList.add('nav-drop-sub');
+      navSubItem.addEventListener('mouseenter', () => {
+        if (isDesktop.matches) {
+          navSubItem.closest('ul').querySelectorAll('.nav-drop-sub').forEach((s) => s.setAttribute('aria-expanded', 'false'));
+          navSubItem.setAttribute('aria-expanded', 'true');
+        }
+      });
+      navSubItem.addEventListener('mouseleave', () => {
+        if (isDesktop.matches) {
+          navSubItem.setAttribute('aria-expanded', 'false');
         }
       });
     });
